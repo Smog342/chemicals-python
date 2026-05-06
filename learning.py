@@ -23,10 +23,10 @@ def load_and_preprocess(data_dir, img_size):
                 img = img.resize((img_size, img_size))
                 img_array = np.array(img).flatten()
                 X.append(img_array)
-                y.append(label)
+                y.append(class_name)
             except Exception as e:
                 print(f"Ошибка при загрузке {img_path}: {e}")
-    return np.array(X), np.array(y)
+    return np.array(X), y
 
 def learn():
     label_encoder = LabelEncoder()
