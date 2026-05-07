@@ -16,8 +16,7 @@ class WaterClassifier:
 
         imgJSONString = image.decode('utf-8')
         imgJSON = json.loads(imgJSONString)
-        print(type(bytearray(imgJSON['data']['buffer']['data'])))
-        imgAnotherByteArray = bytearray(imgJSON['data']['buffer']['data'])
+        imgAnotherByteArray = bytearray(imgJSON['data']['file']['buffer']['data'])
         anotherImg = Image.open(io.BytesIO(imgAnotherByteArray))
         img = anotherImg.resize((128, 128))
         X = np.array(img).flatten()
@@ -27,6 +26,8 @@ class WaterClassifier:
         X = X.reshape(1, -1)
 
         pred_idx = self.model.predict(X)[0]
+
+        print(imgJSON['data']['taskId'])
 
         return {
             'position': self.label_encoder.inverse_transform([pred_idx])[0],
