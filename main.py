@@ -1,4 +1,7 @@
+import json
 from pathlib import Path
+
+from PIL import Image
 
 from classification import WaterClassifier
 from learning import learn
@@ -7,6 +10,7 @@ import sys
 import os
 import base64
 import io
+from db import changeTaskStatus
 
 def main():
 
@@ -31,9 +35,14 @@ def main():
     channel.queue_declare(queue='water_classification')
 
     def callback(ch, method, properties, body):
-        # img = base64.b64decode(body)
-        res = water_classifier.predict(body)
-        print(res['position'])
+
+        imgJSONString = body.decode('utf-8')
+        imgJSON = json.loads(imgJSONString)
+        imgAnotherByteArray = bytearray(imgJSON['data']['file']['buffer']['data'])
+        anotherImg = Image.open(io.BytesIO(imgAnotherByteArray))
+
+        res = water_classifier.predict(anotherImg)
+        changeTaskStatus(imgJSON['data']['taskId'], res['position'])
 
     channel.basic_consume(queue='water_classification', on_message_callback=callback, auto_ack=True)
 
