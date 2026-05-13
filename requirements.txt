@@ -1,0 +1,4 @@
+pika
+scikit-learn
+psycopg[binary,pool]
+pillow
